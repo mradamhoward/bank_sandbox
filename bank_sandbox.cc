@@ -64,7 +64,7 @@ void menu::printMenu(){
     cout << "1: View customers. \n";
     cout << "2: Add a customer. \n";
     cout << "3: Remove customers(s). \n";
-    cout << "4: Edit customer(s). ";
+    cout << "4: Edit customer(s). \n";
     cout << "5: Search for customer(s). \n";
     cout << "6: Load customers from file. \n";
     cout << "7: Save customers to file. \n";
@@ -196,7 +196,7 @@ void menu::searchForCustomers(vector<customer>& customers){
             string toSearch;
             cout << "Name to search for: ";
             cin >> toSearch;
-            for(customer c : customers){
+            for(customer& c : customers){
                 if(c.name == toSearch){
                     results.push_back(c);
                 }
@@ -208,7 +208,7 @@ void menu::searchForCustomers(vector<customer>& customers){
             int toSearchAge;
             cout << "Name to search for: ";
             cin >> toSearchAge;
-            for(customer c : customers){
+            for(customer& c : customers){
                 if(c.age == toSearchAge){
                     results.push_back(c);
                 }
@@ -220,7 +220,7 @@ void menu::searchForCustomers(vector<customer>& customers){
             int toSearchBalance;
             cout << "Balance to search for: ";
             cin >> toSearchBalance;
-            for(customer c : customers){
+            for(customer& c : customers){
                 if(c.balance == toSearchBalance){
                     results.push_back(c);
                 }
@@ -232,7 +232,7 @@ void menu::searchForCustomers(vector<customer>& customers){
             char toSearchGender;
             cout << "Gender to search for: (m/f)";
             cin >> toSearchGender;
-            for(customer c : customers){
+            for(customer& c : customers){
                 if(c.gender == toSearchGender){
                     results.push_back(c);
                 }
@@ -250,7 +250,7 @@ void menu::searchForCustomers(vector<customer>& customers){
             } else {
                 over = false;
             }
-            for(customer c : customers){
+            for(customer& c : customers){
                 if(c.overdraft == over){
                     results.push_back(c);
                 }
@@ -262,7 +262,7 @@ void menu::searchForCustomers(vector<customer>& customers){
             double toSearchOverdraftAmount;
             cout << "Overdraft Amount to search for: (double)";
             cin >> toSearchOverdraftAmount;
-            for(customer c : customers){
+            for(customer& c : customers){
                 if(c.overdraftAmount == toSearchOverdraftAmount){
                     results.push_back(c);
                 }
@@ -287,7 +287,7 @@ void menu::removeCustomer(vector<customer>& customers){
     cin.ignore();
     getline(cin, toRemove);
     int index = 0;
-    for(customer c : customers){
+    for(customer& c : customers){
         if(c.name == toRemove){
         customers.erase(customers.begin() +  index);    
          }
@@ -302,9 +302,10 @@ void menu::editCustomer(vector<customer>& customers){
     getline(cin, toEdit);
     int index = 0;
 
-    for(customer c : customers){
+    for(customer& c : customers){
         if(c.name == toEdit){
             cout << "Enter new name for " << c.name << "\n";
+            cin.ignore();
             getline(cin, c.name);
             cout << "Enter new age for " << c.name << "\n";
             cin >> c.age;
@@ -338,13 +339,15 @@ void menu::editCustomer(vector<customer>& customers){
 
 
 void menu::chargeAllAmount(vector<customer>& customers, double amount){
-    for(customer c: customers){
+    for(customer& c: customers){
+        cout << "Balance before: " << c.balance;
         c.balance += amount;
+        cout << "Balance after: " << c.balance;    
     }
 }
 
 void menu::chargeSpecificAmount(vector<customer>& customers, double amount, string person){
-    for(customer c: customers){
+    for(customer& c: customers){
         if(c.name == person){
             c.balance += amount;
         }
@@ -360,7 +363,6 @@ void menu::clearFile(){
 
 int main(){
     vector<customer> customers;
-    vector<customer>& customersRef = customers;
 
     customer customer1(string("Adam Howard"), 24, 50.00, 'm', true, 100.00);
 
@@ -376,7 +378,7 @@ int main(){
         switch(option){
             case 1:
             { 
-                m.printCustomers(customersRef);
+                m.printCustomers(customers);
                 option = 0;
                 break;
             }
@@ -388,31 +390,31 @@ int main(){
             }
             case 3:
             {
-                m.removeCustomer(customersRef);
+                m.removeCustomer(customers);
                 option = 0;
                 break;
             }
             case 4:
             {
-                m.editCustomer(customersRef);
+                m.editCustomer(customers);
                 option = 0;
                 break;
             }
             case 5:
             {
-                m.searchForCustomers(customersRef);
+                m.searchForCustomers(customers);
                 option = 0;
                 break;
             }
             case 6:
             { 
-                m.loadCustomersFromFile(customersRef);
+                m.loadCustomersFromFile(customers);
                 option = 0;
                 break;
             }
             case 7:
             {
-                for(customer c : customers){
+                for(customer& c : customers){
                     m.saveCustomersToFile(c.getDetails());
                 }
                 option = 0;
@@ -423,19 +425,21 @@ int main(){
                 cout << "Enter the amount you would like to apply to all customers' balance: ";
                 double amount;
                 cin >> amount;
-                m.chargeAllAmount(customersRef, amount);
+                m.chargeAllAmount(customers, amount);
                 option = 0;
+                m.printCustomers(customers);
                 break;
             }
             case 9:
             {
                 cout << "Enter the person you would like to apply the amount to their balance: ";
                 string person;
+                cin.ignore();
                 getline(cin, person);
                 cout << "Enter the amount you would like to apply to balance: ";
                 double amount;
                 cin >> amount;
-                m.chargeSpecificAmount(customersRef, amount, person);
+                m.chargeSpecificAmount(customers, amount, person);
                 option = 0;
                 break;
             }
