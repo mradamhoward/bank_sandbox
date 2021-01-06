@@ -340,9 +340,7 @@ void menu::editCustomer(vector<customer>& customers){
 
 void menu::chargeAllAmount(vector<customer>& customers, double amount){
     for(customer& c: customers){
-        cout << "Balance before: " << c.balance;
         c.balance += amount;
-        cout << "Balance after: " << c.balance;    
     }
 }
 
@@ -374,6 +372,8 @@ int main(){
 
     while(true){
         m.printMenu();
+        cin.clear();
+        cin.ignore();
         cin >> option;
         switch(option){
             case 1:
